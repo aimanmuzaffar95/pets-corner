@@ -1,0 +1,49 @@
+services:
+  api:
+    build:
+      context: .
+      target: production
+    container_name: pets-corner-api
+    env_file:
+      - .env.production
+    ports:
+      - '${API_PORT:-3000}:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  db:
+    image: postgres:16-alpine
+    container_name: pets-corner-db
+    env_file:
+      - .env.production
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pets-corner-pgadmin
+    env_file:
+      - .env.production
+    ports:
+      - '${PGADMIN_PORT:-5050}:80'
+    volumes:
+      - pgadmin_data_prod:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    profiles:
+      - admin
+
+volumes:
+  postgres_data_prod:
+  pgadmin_data_prod:
