@@ -1,0 +1,54 @@
+services:
+  api:
+    build:
+      context: .
+      target: development
+    container_name: pets-corner-api-dev
+    env_file:
+      - .env.development
+    ports:
+      - '${API_PORT:-3000}:3000'
+    volumes:
+      - .:/app
+      - api_node_modules:/app/node_modules
+    command: npm run start:dev -- --host 0.0.0.0
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: pets-corner-db-dev
+    env_file:
+      - .env.development
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pets-corner-pgadmin-dev
+    env_file:
+      - .env.development
+    ports:
+      - '${PGADMIN_PORT:-5050}:80'
+    volumes:
+      - pgadmin_data_dev:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  api_node_modules:
+  postgres_data_dev:
+  pgadmin_data_dev:
