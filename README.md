@@ -6,6 +6,8 @@ Current stage:
 - Nest app is running with a starter endpoint.
 - Dockerized development and production stacks are configured.
 - Supporting services: PostgreSQL and pgAdmin.
+- TypeORM is configured with migration-first workflow.
+- Initial `Pet` persistence foundation is in place (`pets` + `species` tables).
 
 ## Development model
 
@@ -29,6 +31,9 @@ This project is primarily developed by AI coding agents, with minimal direct hum
 - `Dockerfile`: multi-stage image (`development` + `production`)
 - `.env.development`: runtime env for dev compose
 - `.env.production`: runtime env for prod compose
+- `src/pet`: `PetModule` + `PetEntity` + `SpeciesEntity`
+- `src/database/migrations`: TypeORM SQL migrations
+- `src/database/typeorm.datasource.ts`: TypeORM CLI datasource
 
 ## Prerequisites
 
@@ -59,6 +64,13 @@ cp .env.production.example .env.production
 Before production usage, update sensitive values in `.env.production`:
 - `POSTGRES_PASSWORD`
 - `PGADMIN_DEFAULT_PASSWORD`
+
+Required DB env vars for non-test runtime:
+- `POSTGRES_HOST`
+- `POSTGRES_PORT`
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
 
 ### 2) Development stack
 
@@ -104,7 +116,34 @@ npm run build
 npm run test
 npm run test:e2e
 npm run lint
+npm run migration:run
+npm run migration:revert
 ```
+
+## Migrations
+
+Generate a migration from entity changes:
+
+```bash
+npm run migration:generate
+```
+
+Create an empty migration:
+
+```bash
+npm run migration:create
+```
+
+Run and rollback:
+
+```bash
+npm run migration:run
+npm run migration:revert
+```
+
+Current DB schema baseline:
+- `species` lookup table (`DOG`, `CAT`, `BIRD`, `OTHER`)
+- `pets` table with FK to `species` and soft-delete column (`deleted_at`)
 
 ## Troubleshooting
 

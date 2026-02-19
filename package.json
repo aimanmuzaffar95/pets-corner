@@ -15,6 +15,11 @@
     "start:prod": "node dist/main",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typeorm": "TYPEORM_ENV_FILE=.env.development node --require ts-node/register --require tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/database/typeorm.datasource.ts",
+    "migration:generate": "POSTGRES_HOST=localhost npm run typeorm -- migration:generate src/database/migrations/GeneratedMigration",
+    "migration:create": "POSTGRES_HOST=localhost npm run typeorm -- migration:create src/database/migrations/CustomMigration",
+    "migration:run": "POSTGRES_HOST=localhost npm run typeorm -- migration:run",
+    "migration:revert": "POSTGRES_HOST=localhost npm run typeorm -- migration:revert",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -23,10 +28,16 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
+    "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
