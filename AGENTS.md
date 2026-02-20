@@ -68,7 +68,7 @@ You are the coding agent for this NestJS service. Deliver small, correct, secure
 - Treat warnings as actionable debt.
 - Keep branch changes focused and reversible.
 - Document env vars in `.env.example`.
-- Update README/API docs for behavior changes.
+- Update `README.md` on every change (code, config, CI, docs) so project documentation stays current.
 
 ## Quick Commands
 ```bash

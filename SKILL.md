@@ -82,4 +82,4 @@ Use this workflow when implementing features in this repository.
 ## Completion Criteria
 - Lint, unit tests, and relevant e2e tests pass.
 - New behavior is covered by tests.
-- README/env docs updated when behavior or configuration changes.
+- `README.md` is updated on every change (code, config, CI, docs) so project documentation always stays current.
