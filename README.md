@@ -8,6 +8,7 @@ Current stage:
 - Supporting services: PostgreSQL and pgAdmin.
 - TypeORM is configured with migration-first workflow.
 - Initial `Pet` persistence foundation is in place (`pets` + `species` tables).
+- JWT-based user authentication is available (`users` + `auth` modules).
 
 ## Development model
 
@@ -22,7 +23,57 @@ This project is primarily developed by AI coding agents, with minimal direct hum
 
 ## Current API
 
-- `GET /` -> `Hello Aiman!`
+- `GET /pets`
+- `GET /pets/species`
+- `GET /pets/:id`
+- `POST /pets`
+- `PATCH /pets/:id`
+- `DELETE /pets/:id`
+- `POST /auth/register`
+- `POST /auth/login`
+- `GET /users/me` (JWT bearer required)
+
+## Response contract (breaking change)
+
+All non-`204` endpoints now return a standardized envelope.
+
+Success response shape:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "meta": {
+    "timestamp": "2026-02-21T15:04:05.000Z",
+    "path": "/auth/login"
+  }
+}
+```
+
+Error response shape:
+
+```json
+{
+  "success": false,
+  "error": {
+    "type": "https://api.petscorner.dev/problems/validation",
+    "code": "VALIDATION_ERROR",
+    "title": "Validation failed",
+    "status": 400,
+    "detail": "One or more fields are invalid",
+    "errors": [
+      {
+        "field": "email",
+        "message": "email must be an email"
+      }
+    ],
+    "timestamp": "2026-02-21T15:04:05.000Z",
+    "path": "/auth/register"
+  }
+}
+```
+
+`204 No Content` endpoints (e.g. `DELETE /pets/:id`) still return an empty body.
 
 ## Project structure
 
@@ -32,6 +83,8 @@ This project is primarily developed by AI coding agents, with minimal direct hum
 - `.env.development`: runtime env for dev compose
 - `.env.production`: runtime env for prod compose
 - `src/pet`: `PetModule` + `PetEntity` + `SpeciesEntity`
+- `src/users`: user entity, service, and profile endpoint
+- `src/auth`: auth controller/service, JWT strategy, and DTOs
 - `src/database/migrations`: TypeORM SQL migrations
 - `src/database/typeorm.datasource.ts`: TypeORM CLI datasource
 
@@ -71,6 +124,11 @@ Required DB env vars for non-test runtime:
 - `POSTGRES_DB`
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
+
+Required auth env vars:
+- `JWT_ACCESS_TOKEN_SECRET`
+- `JWT_ACCESS_TOKEN_EXPIRES_IN` (default `24h`)
+- `BCRYPT_SALT_ROUNDS` (default `12`)
 
 ### 2) Development stack
 
@@ -144,6 +202,80 @@ npm run migration:revert
 Current DB schema baseline:
 - `species` lookup table (`DOG`, `CAT`, `BIRD`, `OTHER`)
 - `pets` table with FK to `species` and soft-delete column (`deleted_at`)
+- `users` table for local auth accounts with unique email
+
+## Auth payloads
+
+`POST /auth/register` request:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "Strong!123",
+  "firstName": "Aiman",
+  "lastName": "Muzaffar",
+  "bio": "Optional text"
+}
+```
+
+`POST /auth/login` request:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "Strong!123"
+}
+```
+
+`POST /auth/register` success `data.user` includes timestamps:
+
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "<jwt>",
+    "tokenType": "Bearer",
+    "expiresIn": "24h",
+    "user": {
+      "id": "<uuid>",
+      "email": "user@example.com",
+      "firstName": "Aiman",
+      "lastName": "Muzaffar",
+      "bio": null,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  },
+  "meta": {
+    "timestamp": "2026-02-21T15:04:05.000Z",
+    "path": "/auth/login"
+  }
+}
+```
+
+`POST /auth/login` success `data.user` excludes `createdAt` and `updatedAt`:
+
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "<jwt>",
+    "tokenType": "Bearer",
+    "expiresIn": "24h",
+    "user": {
+      "id": "<uuid>",
+      "email": "user@example.com",
+      "firstName": "Aiman",
+      "lastName": "Muzaffar",
+      "bio": null
+    }
+  },
+  "meta": {
+    "timestamp": "2026-02-21T15:04:05.000Z",
+    "path": "/auth/login"
+  }
+}
+```
 
 ## Troubleshooting
 

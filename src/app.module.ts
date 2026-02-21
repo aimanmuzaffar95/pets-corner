@@ -3,11 +3,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { buildTypeOrmOptions } from './config/database.config';
 import { validateEnv } from './config/env.validation';
 import { PetEntity } from './pet/entities/pet.entity';
 import { SpeciesEntity } from './pet/entities/species.entity';
 import { PetModule } from './pet/pet.module';
+import { UserEntity } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
 const envFilePath = isTestEnvironment
@@ -34,12 +37,14 @@ const databaseAndFeatureModules = isTestEnvironment
                 configService.getOrThrow<string>('POSTGRES_PASSWORD'),
             },
             {
-              entities: [PetEntity, SpeciesEntity],
+              entities: [PetEntity, SpeciesEntity, UserEntity],
             },
           );
         },
       }),
       PetModule,
+      UsersModule,
+      AuthModule,
     ];
 
 @Module({

@@ -55,6 +55,21 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   POSTGRES_PASSWORD!: string;
+
+  @ValidateIf(shouldValidateDatabaseConfig)
+  @IsString()
+  @IsNotEmpty()
+  JWT_ACCESS_TOKEN_SECRET!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_ACCESS_TOKEN_EXPIRES_IN = '24h';
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(4)
+  @Max(31)
+  BCRYPT_SALT_ROUNDS = 12;
 }
 
 export function validateEnv(
