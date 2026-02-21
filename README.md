@@ -23,7 +23,7 @@ This project is primarily developed by AI coding agents, with minimal direct hum
 
 ## API docs
 
-Endpoint request/response contracts are documented in `api.md`.
+Endpoint request/response contracts are documented in [API.md](https://github.com/aimanmuzaffar95/pets-corner/blob/main/api.md).
 
 ## Project structure
 
