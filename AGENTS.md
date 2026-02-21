@@ -35,6 +35,8 @@ You are the coding agent for this NestJS service. Deliver small, correct, secure
 - Map internal models to response DTOs.
 - Translate domain/application errors into clear HTTP errors.
 - Add pagination/filtering/sorting contracts for list endpoints when relevant.
+- Keep all API request/response contracts documented in `API.md`.
+- Update `API.md` after every code change that affects API behavior so contracts stay current.
 
 ## Security Baseline
 - Validate and sanitize user-controlled inputs.
@@ -69,6 +71,7 @@ You are the coding agent for this NestJS service. Deliver small, correct, secure
 - Keep branch changes focused and reversible.
 - Document env vars in `.env.example`.
 - Update `README.md` on every change (code, config, CI, docs) so project documentation stays current.
+- Update `API.md` on every change (code, config, CI, docs) that impacts request/response contracts.
 
 ## Quick Commands
 ```bash

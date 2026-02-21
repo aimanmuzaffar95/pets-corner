@@ -83,3 +83,5 @@ Use this workflow when implementing features in this repository.
 - Lint, unit tests, and relevant e2e tests pass.
 - New behavior is covered by tests.
 - `README.md` is updated on every change (code, config, CI, docs) so project documentation always stays current.
+- `API.md` is the source of truth for all API request/response contracts.
+- `API.md` is updated after every code change that affects endpoint inputs, outputs, or error shapes.
