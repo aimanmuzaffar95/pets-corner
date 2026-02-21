@@ -12,7 +12,7 @@ Current stage:
 
 ## Development model
 
-This project is primarily developed by AI coding agents, with minimal direct human coding.
+This project is primarily developed by AI coding agents, with minimal direct human coding and only high level planning and architecture decisions.
 
 ## Tech stack
 
@@ -21,59 +21,9 @@ This project is primarily developed by AI coding agents, with minimal direct hum
 - pgAdmin 4 (`dpage/pgadmin4:8`)
 - Docker Compose (separate dev/prod files)
 
-## Current API
+## API docs
 
-- `GET /pets`
-- `GET /pets/species`
-- `GET /pets/:id`
-- `POST /pets`
-- `PATCH /pets/:id`
-- `DELETE /pets/:id`
-- `POST /auth/register`
-- `POST /auth/login`
-- `GET /users/me` (JWT bearer required)
-
-## Response contract (breaking change)
-
-All non-`204` endpoints now return a standardized envelope.
-
-Success response shape:
-
-```json
-{
-  "success": true,
-  "data": {},
-  "meta": {
-    "timestamp": "2026-02-21T15:04:05.000Z",
-    "path": "/auth/login"
-  }
-}
-```
-
-Error response shape:
-
-```json
-{
-  "success": false,
-  "error": {
-    "type": "https://api.petscorner.dev/problems/validation",
-    "code": "VALIDATION_ERROR",
-    "title": "Validation failed",
-    "status": 400,
-    "detail": "One or more fields are invalid",
-    "errors": [
-      {
-        "field": "email",
-        "message": "email must be an email"
-      }
-    ],
-    "timestamp": "2026-02-21T15:04:05.000Z",
-    "path": "/auth/register"
-  }
-}
-```
-
-`204 No Content` endpoints (e.g. `DELETE /pets/:id`) still return an empty body.
+Endpoint request/response contracts are documented in `api.md`.
 
 ## Project structure
 
@@ -203,79 +153,6 @@ Current DB schema baseline:
 - `species` lookup table (`DOG`, `CAT`, `BIRD`, `OTHER`)
 - `pets` table with FK to `species` and soft-delete column (`deleted_at`)
 - `users` table for local auth accounts with unique email
-
-## Auth payloads
-
-`POST /auth/register` request:
-
-```json
-{
-  "email": "user@example.com",
-  "password": "Strong!123",
-  "firstName": "Aiman",
-  "lastName": "Muzaffar",
-  "bio": "Optional text"
-}
-```
-
-`POST /auth/login` request:
-
-```json
-{
-  "email": "user@example.com",
-  "password": "Strong!123"
-}
-```
-
-`POST /auth/register` success `data.user` includes timestamps:
-
-```json
-{
-  "success": true,
-  "data": {
-    "accessToken": "<jwt>",
-    "tokenType": "Bearer",
-    "expiresIn": "24h",
-    "user": {
-      "id": "<uuid>",
-      "email": "user@example.com",
-      "firstName": "Aiman",
-      "lastName": "Muzaffar",
-      "bio": null,
-      "createdAt": "2026-01-01T00:00:00.000Z",
-      "updatedAt": "2026-01-01T00:00:00.000Z"
-    }
-  },
-  "meta": {
-    "timestamp": "2026-02-21T15:04:05.000Z",
-    "path": "/auth/login"
-  }
-}
-```
-
-`POST /auth/login` success `data.user` excludes `createdAt` and `updatedAt`:
-
-```json
-{
-  "success": true,
-  "data": {
-    "accessToken": "<jwt>",
-    "tokenType": "Bearer",
-    "expiresIn": "24h",
-    "user": {
-      "id": "<uuid>",
-      "email": "user@example.com",
-      "firstName": "Aiman",
-      "lastName": "Muzaffar",
-      "bio": null
-    }
-  },
-  "meta": {
-    "timestamp": "2026-02-21T15:04:05.000Z",
-    "path": "/auth/login"
-  }
-}
-```
 
 ## Troubleshooting
 
