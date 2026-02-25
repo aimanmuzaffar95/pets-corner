@@ -15,6 +15,10 @@ import { UserEntity } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
+const migrationPaths =
+  process.env.NODE_ENV === 'production'
+    ? ['dist/database/migrations/*{.js}']
+    : ['src/database/migrations/*{.ts,.js}'];
 const envFilePath = isTestEnvironment
   ? ['.env.test', '.env']
   : process.env.NODE_ENV === 'production'
@@ -27,7 +31,7 @@ const databaseAndFeatureModules = isTestEnvironment
       TypeOrmModule.forRootAsync({
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => {
-          return buildTypeOrmOptions(
+          const databaseOptions = buildTypeOrmOptions(
             {
               POSTGRES_HOST: configService.getOrThrow<string>('POSTGRES_HOST'),
               POSTGRES_PORT: Number(
@@ -45,8 +49,14 @@ const databaseAndFeatureModules = isTestEnvironment
                 UserEntity,
                 AdoptionListingEntity,
               ],
+              migrations: migrationPaths,
             },
           );
+
+          return {
+            ...databaseOptions,
+            migrationsRun: true,
+          };
         },
       }),
       AdoptionListingsModule,

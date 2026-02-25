@@ -137,6 +137,8 @@ npm run migration:revert
 
 ## Migrations
 
+The API now auto-runs pending migrations on startup in non-test environments.
+
 Generate a migration from entity changes:
 
 ```bash
