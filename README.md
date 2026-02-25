@@ -3,12 +3,14 @@
 NestJS API scaffold for the Pets Corner backend.
 
 Current stage:
+
 - Nest app is running with a starter endpoint.
 - Dockerized development and production stacks are configured.
 - Supporting services: PostgreSQL and pgAdmin.
 - TypeORM is configured with migration-first workflow.
 - Initial `Pet` persistence foundation is in place (`pets` + `species` tables).
 - JWT-based user authentication is available (`users` + `auth` modules).
+- First-class adoption listings are available (`adoption_listings` table + `/adoption-listings` APIs).
 
 ## Development model
 
@@ -33,6 +35,7 @@ Endpoint request/response contracts are documented in [API.md](https://github.co
 - `.env.development`: runtime env for dev compose
 - `.env.production`: runtime env for prod compose
 - `src/pet`: `PetModule` + `PetEntity` + `SpeciesEntity`
+- `src/adoption-listings`: listing lifecycle APIs and persistence (`AdoptionListingsModule`)
 - `src/users`: user entity, service, and profile endpoint
 - `src/auth`: auth controller/service, JWT strategy, and DTOs
 - `src/database/migrations`: TypeORM SQL migrations
@@ -65,10 +68,12 @@ cp .env.production.example .env.production
 ```
 
 Before production usage, update sensitive values in `.env.production`:
+
 - `POSTGRES_PASSWORD`
 - `PGADMIN_DEFAULT_PASSWORD`
 
 Required DB env vars for non-test runtime:
+
 - `POSTGRES_HOST`
 - `POSTGRES_PORT`
 - `POSTGRES_DB`
@@ -76,6 +81,7 @@ Required DB env vars for non-test runtime:
 - `POSTGRES_PASSWORD`
 
 Required auth env vars:
+
 - `JWT_ACCESS_TOKEN_SECRET`
 - `JWT_ACCESS_TOKEN_EXPIRES_IN` (default `24h`)
 - `BCRYPT_SALT_ROUNDS` (default `12`)
@@ -87,6 +93,7 @@ docker compose -f docker-compose.dev.yml up --build
 ```
 
 Services:
+
 - API: `http://localhost:3000`
 - Postgres: `localhost:5432`
 - pgAdmin: `http://localhost:5050`
@@ -150,9 +157,12 @@ npm run migration:revert
 ```
 
 Current DB schema baseline:
+
 - `species` lookup table (`DOG`, `CAT`, `BIRD`, `OTHER`)
 - `pets` table with FK to `species` and soft-delete column (`deleted_at`)
 - `users` table for local auth accounts with unique email
+- `adoption_listings` table with status lifecycle (`DRAFT`, `PUBLISHED`, `PAUSED`, `ADOPTED`, `WITHDRAWN`, `EXPIRED`)
+- unique active-listing constraint per pet (`DRAFT`, `PUBLISHED`, `PAUSED`)
 
 ## Troubleshooting
 

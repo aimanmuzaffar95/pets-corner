@@ -1,5 +1,6 @@
 import { config as loadEnv } from 'dotenv';
 import { DataSource } from 'typeorm';
+import { AdoptionListingEntity } from '../adoption-listings/entities/adoption-listing.entity';
 import { buildDatabaseOptions } from '../config/database.config';
 import { validateEnv } from '../config/env.validation';
 import { PetEntity } from '../pet/entities/pet.entity';
@@ -12,7 +13,7 @@ const env = validateEnv(process.env as Record<string, unknown>);
 
 export default new DataSource(
   buildDatabaseOptions(env, {
-    entities: [PetEntity, SpeciesEntity, UserEntity],
+    entities: [PetEntity, SpeciesEntity, UserEntity, AdoptionListingEntity],
     migrations: ['src/database/migrations/*{.ts,.js}'],
   }),
 );

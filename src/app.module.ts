@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdoptionListingsModule } from './adoption-listings/adoption-listings.module';
+import { AdoptionListingEntity } from './adoption-listings/entities/adoption-listing.entity';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -37,11 +39,17 @@ const databaseAndFeatureModules = isTestEnvironment
                 configService.getOrThrow<string>('POSTGRES_PASSWORD'),
             },
             {
-              entities: [PetEntity, SpeciesEntity, UserEntity],
+              entities: [
+                PetEntity,
+                SpeciesEntity,
+                UserEntity,
+                AdoptionListingEntity,
+              ],
             },
           );
         },
       }),
+      AdoptionListingsModule,
       PetModule,
       UsersModule,
       AuthModule,
